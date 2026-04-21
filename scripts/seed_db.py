@@ -15,8 +15,11 @@ def seed(path: str):
     for entry in entries:
         result = client.table('entries').insert({
             'english': entry['english'],
-            'part_of_speech': entry.get('part_of_speech', ''),
+            'part_of_speech': entry.get('part_of_speech') or None,
         }).execute()
+        if not result.data:
+            print(f"ERROR: insert failed for '{entry['english']}'", file=sys.stderr)
+            sys.exit(1)
         entry_id = result.data[0]['id']
         for v in entry.get('variants', []):
             assyrian = v.get('assyrian', '')
