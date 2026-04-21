@@ -31,6 +31,7 @@ def import_data(json_path: str):
         ]
         result = client.table('entries').insert(entry_rows).execute()
         entry_ids = [row['id'] for row in result.data]
+        assert len(entry_ids) == len(batch), f"Expected {len(batch)} IDs, got {len(entry_ids)}"
 
         variant_rows = []
         for entry_id, entry in zip(entry_ids, batch):
