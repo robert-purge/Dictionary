@@ -8,6 +8,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     globals: true,
+    env: {
+      NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'placeholder-anon-key',
+    },
   },
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
