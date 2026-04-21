@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 
 interface Props {
   onSearch: (query: string) => void
+  onCommit?: () => void
 }
 
-export default function SearchBar({ onSearch }: Props) {
+export default function SearchBar({ onSearch, onCommit }: Props) {
   const [value, setValue] = useState('')
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -23,6 +24,7 @@ export default function SearchBar({ onSearch }: Props) {
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter') onCommit?.() }}
         placeholder="Search in English, ܐܬܘܪܝܐ, عربي, or فارسی"
         className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-300"
         autoFocus
