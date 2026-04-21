@@ -1,0 +1,38 @@
+[
+  {
+    "english": "abase",
+    "part_of_speech": "vt.",
+    "variants": [
+      { "number": 1, "assyrian": "ܝܟܝܕ، ܝܟܡܝܕ", "arabic": "يُذل، يحقّر", "farsi": null, "example_assyrian": null, "example_arabic": null },
+      { "number": 2, "assyrian": "ܡܟܟ، ܫܦܠ", "arabic": "يتذلل، يخضع", "farsi": null, "example_assyrian": null, "example_arabic": null }
+    ]
+  },
+  {
+    "english": "abandon",
+    "part_of_speech": "vt.",
+    "variants": [
+      { "number": 1, "assyrian": "ܫܒܩ، ܫܒܩܠܗ", "arabic": "يهجر، يتخلى عن", "farsi": null, "example_assyrian": null, "example_arabic": null }
+    ]
+  },
+  {
+    "english": "aback",
+    "part_of_speech": "adv.",
+    "variants": [
+      { "number": 1, "assyrian": "ܒܣܬܪܐ", "arabic": "إلى الوراء، إلى الخلف", "farsi": null, "example_assyrian": null, "example_arabic": null }
+    ]
+  },
+  {
+    "english": "abbreviate",
+    "part_of_speech": "vt.",
+    "variants": [
+      { "number": 1, "assyrian": "ܡܩܨܪ، ܩܨܪ", "arabic": "يختصر، يقصّر", "farsi": null, "example_assyrian": null, "example_arabic": null }
+    ]
+  },
+  {
+    "english": "ability",
+    "part_of_speech": "n.",
+    "variants": [
+      { "number": 1, "assyrian": "ܚܝܠܐ، ܡܨܝܐ", "arabic": "قدرة، مهارة", "farsi": null, "example_assyrian": null, "example_arabic": null }
+    ]
+  }
+]
