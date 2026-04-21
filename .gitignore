@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# superpowers brainstorm session files
+.superpowers/
+
+# claude local settings
+.claude/settings.local.json
