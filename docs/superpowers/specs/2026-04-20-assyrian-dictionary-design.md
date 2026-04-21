@@ -31,7 +31,8 @@ User types → Next.js API route → PostgreSQL (pg_trgm search) → ranked resu
 ```
 
 Language is auto-detected from the input characters:
-- Syriac Unicode (U+0700–U+074F) → search `assyrian` column
+
+- Syriac Unicode (U+0700–U+074F) → normalize query (strip vowel points U+0730–U+074A), search `assyrian_normalized` column
 - Arabic/Farsi Unicode (U+0600–U+06FF) → search `arabic` and `farsi` columns
 - Latin characters → search `english` column
 
@@ -57,7 +58,8 @@ Each entry can have multiple numbered senses (1°, 2°, 3°...).
 | `id` | `serial PRIMARY KEY` | |
 | `entry_id` | `int REFERENCES entries(id)` | Parent entry |
 | `number` | `int` | Variant number (1, 2, 3...) |
-| `assyrian` | `text` | Assyrian (Syriac) translation |
+| `assyrian` | `text` | Assyrian (Syriac) translation — full form with vowel marks (for display) |
+| `assyrian_normalized` | `text` | Vowel-stripped consonantal form (for search indexing only) |
 | `arabic` | `text` | Arabic translation |
 | `farsi` | `text` | Farsi translation (nullable, filled later) |
 | `example_assyrian` | `text` | Example sentence in Assyrian (nullable) |
@@ -68,7 +70,7 @@ Each entry can have multiple numbered senses (1°, 2°, 3°...).
 ```sql
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX idx_entries_english_trgm ON entries USING gin (english gin_trgm_ops);
-CREATE INDEX idx_variants_assyrian_trgm ON variants USING gin (assyrian gin_trgm_ops);
+CREATE INDEX idx_variants_assyrian_trgm ON variants USING gin (assyrian_normalized gin_trgm_ops);
 CREATE INDEX idx_variants_arabic_trgm ON variants USING gin (arabic gin_trgm_ops);
 CREATE INDEX idx_variants_farsi_trgm ON variants USING gin (farsi gin_trgm_ops);
 ```
@@ -89,6 +91,14 @@ CREATE INDEX idx_variants_farsi_trgm ON variants USING gin (farsi gin_trgm_ops);
 - **Substring match** — "base" also finds "abase"
 - **Fuzzy / typo tolerance** — "abaze" still finds "abase" via trigram similarity
 - Results are deduplicated and ranked by `similarity()` score
+
+### Assyrian vowel handling
+
+Syriac vowel points (U+0730–U+074A) are stripped from both the stored index (`assyrian_normalized`) and the search query before matching. This means:
+
+- Typing consonants-only still finds all voweled forms
+- Multiple variants sharing the same consonants but different vowel marks (different meanings) all appear in results
+- Results display the **full voweled form** (`assyrian` column) so the user can distinguish meanings and choose the correct one
 
 ---
 
