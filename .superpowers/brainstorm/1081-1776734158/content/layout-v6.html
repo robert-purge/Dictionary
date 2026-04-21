@@ -1,0 +1,99 @@
+<h2>Layout B — Flag Watermark (fixed stripes)</h2>
+<p class="subtitle">3 distinct color bands per corner, properly separated. Click to select.</p>
+
+<div class="cards">
+  <div class="card" data-choice="flag-watermark-v2" onclick="toggleSelect(this)">
+    <div class="card-image">
+
+      <div style="position:relative;font-family:sans-serif;border-radius:8px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.18);background:#f9f9f7;min-height:340px">
+
+        <!-- Assyrian flag as proper watermark: non-overlapping wedges -->
+        <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg"
+             style="position:absolute;inset:0;width:100%;height:100%;opacity:0.13">
+          <!-- White background -->
+          <rect width="900" height="600" fill="white"/>
+
+          <!-- TOP-LEFT corner: 3 wedges from center(450,300) -->
+          <!-- Blue (outermost) -->
+          <polygon points="450,300 450,0 277,0" fill="#003DA5"/>
+          <!-- White (middle — blends with bg, just structure) -->
+          <polygon points="450,300 277,0 0,40" fill="#e0e0e0"/>
+          <!-- Red (inner) -->
+          <polygon points="450,300 0,40 0,300" fill="#D21034"/>
+
+          <!-- TOP-RIGHT corner -->
+          <polygon points="450,300 450,0 623,0" fill="#003DA5"/>
+          <polygon points="450,300 623,0 900,40" fill="#e0e0e0"/>
+          <polygon points="450,300 900,40 900,300" fill="#D21034"/>
+
+          <!-- BOTTOM-LEFT corner -->
+          <polygon points="450,300 0,300 0,560" fill="#003DA5"/>
+          <polygon points="450,300 0,560 277,600" fill="#e0e0e0"/>
+          <polygon points="450,300 277,600 450,600" fill="#D21034"/>
+
+          <!-- BOTTOM-RIGHT corner -->
+          <polygon points="450,300 900,300 900,560" fill="#003DA5"/>
+          <polygon points="450,300 900,560 623,600" fill="#e0e0e0"/>
+          <polygon points="450,300 623,600 450,600" fill="#D21034"/>
+
+          <!-- Central 4-pointed star -->
+          <polygon points="450,180 480,270 570,300 480,330 450,420 420,330 330,300 420,270" fill="#003DA5"/>
+
+          <!-- Shamash sun (golden circle) -->
+          <circle cx="450" cy="300" r="56" fill="#F7A800"/>
+          <circle cx="450" cy="300" r="39" fill="#003DA5"/>
+          <circle cx="450" cy="300" r="23" fill="#F7A800"/>
+
+          <!-- Ashur figure above -->
+          <circle cx="450" cy="126" r="16" fill="#F7A800"/>
+          <path d="M434,142 Q450,168 466,142" fill="#F7A800"/>
+          <line x1="422" y1="112" x2="408" y2="96" stroke="#F7A800" stroke-width="4" stroke-linecap="round"/>
+          <line x1="478" y1="112" x2="492" y2="96" stroke="#F7A800" stroke-width="4" stroke-linecap="round"/>
+          <line x1="450" y1="110" x2="450" y2="90" stroke="#F7A800" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+
+        <!-- App UI on top -->
+        <div style="position:relative;z-index:1;padding:16px">
+
+          <div style="text-align:center;margin-bottom:14px">
+            <div style="font-size:20px;font-weight:800;color:#1a1a2e">ܐܬܘܪܝܐ <span style="color:#003DA5">Dictionary</span></div>
+            <div style="font-size:9px;color:#888;letter-spacing:2px;text-transform:uppercase">Assyrian · English · Arabic</div>
+          </div>
+
+          <div style="display:flex;gap:6px;margin-bottom:10px;justify-content:center">
+            <div style="background:#003DA5;color:#fff;border-radius:6px;padding:5px 16px;font-size:12px;font-weight:600">English</div>
+            <div style="background:rgba(255,255,255,0.85);color:#555;border-radius:6px;padding:5px 16px;font-size:12px;border:1px solid #ddd">ܐܬܘܪܝܐ</div>
+            <div style="background:rgba(255,255,255,0.85);color:#555;border-radius:6px;padding:5px 16px;font-size:12px;border:1px solid #ddd">عربي</div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.92);border:1.5px solid #003DA5;border-radius:8px;display:flex;align-items:center;padding:10px 14px;gap:8px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,61,165,0.1)">
+            <span style="color:#003DA5">🔍</span>
+            <span style="color:#bbb;font-size:13px">Search in English...</span>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.92);border-radius:8px;border:1px solid #e8e8e8;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06)">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+              <span style="font-size:16px;font-weight:700;color:#1a1a2e">abase</span>
+              <span style="font-size:10px;color:#888;background:#f0f0f0;padding:2px 8px;border-radius:4px">verb transitive</span>
+            </div>
+            <div style="height:2px;background:linear-gradient(90deg,#003DA5 33%,#F7A800 66%,#D21034 100%);border-radius:2px;margin-bottom:10px"></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:9px;color:#003DA5;font-weight:700;text-transform:uppercase">Assyrian</span>
+              <span style="font-size:13px;direction:rtl;color:#1a1a2e">ܝܟܝܕ، ܝܟܡܝܕ</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:9px;color:#D21034;font-weight:700;text-transform:uppercase">Arabic</span>
+              <span style="font-size:13px;direction:rtl;color:#444">يُذل، يحقّر</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3>Proper 3-color stripes</h3>
+      <p>Blue, grey-white, and red wedges per corner — mathematically non-overlapping. Shamash sun + Ashur above center.</p>
+    </div>
+  </div>
+</div>
