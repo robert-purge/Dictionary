@@ -21,9 +21,11 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
     return () => clearTimeout(timer.current)
   }, [value, onSearch])
 
+  const open = showResults && results.length > 0
+
   return (
     <div className="relative w-full">
-      <div className="flex items-center gap-3 rounded-xl border-2 border-[#003DA5] bg-white/90 px-4 py-3 shadow-md">
+      <div className={`flex items-center gap-3 border-2 border-[#003DA5] bg-white px-4 py-3 shadow-md ${open ? 'rounded-t-xl' : 'rounded-xl'}`}>
         <span className="text-[#003DA5] text-lg">🔍</span>
         <input
           type="text"
@@ -36,8 +38,8 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
         />
       </div>
 
-      {showResults && results.length > 0 && (
-        <ul className="absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto rounded-b-xl border border-t-0 border-gray-200 bg-white shadow-2xl">
+      {open && (
+        <ul className="absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto rounded-b-xl border-2 border-t-0 border-[#003DA5] bg-white shadow-2xl">
           {results.map((r) => (
             <li
               key={r.id}

@@ -37,7 +37,7 @@ export default function Home() {
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
       {/* Search bar with dropdown */}
-      <div className="px-4 pt-4 pb-2 bg-white/70 backdrop-blur-sm border-b border-gray-200">
+      <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200">
         <SearchBar
           onSearch={handleSearch}
           onCommit={handleCommit}
