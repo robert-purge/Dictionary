@@ -29,18 +29,18 @@ export default function WordDetail({ result }: Props) {
 
           <div className="mb-5">
             <p className="text-xs font-bold uppercase tracking-widest text-[#003DA5] mb-2">Assyrian</p>
-            <p dir="rtl" className="text-2xl text-gray-900 leading-relaxed text-right">{v.assyrian}</p>
+            <p dir="rtl" className="text-2xl text-[#003DA5] leading-relaxed text-right">{v.assyrian}</p>
           </div>
 
           <div className="mb-5">
             <p className="text-xs font-bold uppercase tracking-widest text-[#D21034] mb-2">Arabic</p>
-            <p dir="rtl" className="text-xl text-gray-700 leading-relaxed text-right">{v.arabic}</p>
+            <p dir="rtl" className="text-xl text-[#D21034] leading-relaxed text-right">{v.arabic}</p>
           </div>
 
           <div className="mb-5">
             <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Farsi</p>
             {v.farsi
-              ? <p dir="rtl" className="text-xl text-gray-700 leading-relaxed text-right">{v.farsi}</p>
+              ? <p dir="rtl" className="text-xl text-gray-900 leading-relaxed text-right">{v.farsi}</p>
               : <p className="text-sm text-gray-300 italic">Not yet available</p>
             }
           </div>
