@@ -11,10 +11,17 @@ interface Props {
   onSelect: (result: SearchResult) => void
 }
 
+function detectScript(text: string): 'syriac' | 'arabic' | 'latin' {
+  if (/[\u0700-\u074F]/.test(text)) return 'syriac'
+  if (/[\u0600-\u06FF]/.test(text)) return 'arabic'
+  return 'latin'
+}
+
 export default function SearchBar({ onSearch, onCommit, results, showResults, onSelect }: Props) {
   const [value, setValue] = useState('')
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const open = showResults && results.length > 0
+  const script = detectScript(value)
 
   useEffect(() => {
     clearTimeout(timer.current)
@@ -75,16 +82,21 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
                 cursor: 'pointer',
                 borderBottom: '1px solid #f3f4f6',
                 display: 'flex',
-                gap: '8px',
+                justifyContent: 'space-between',
                 alignItems: 'baseline',
+                direction: script === 'latin' ? 'ltr' : 'rtl',
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLLIElement).style.background = '#f9fafb' }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLLIElement).style.background = 'white' }}
             >
-              <span style={{ fontWeight: 500, color: '#111827' }}>{r.english}</span>
-              {r.part_of_speech && (
-                <span style={{ fontSize: '12px', color: '#9ca3af' }}>{r.part_of_speech}</span>
-              )}
+              <span style={{ fontWeight: 500, color: '#111827' }}>
+                {script === 'syriac'
+                  ? (r.variants[0]?.assyrian ?? r.english)
+                  : script === 'arabic'
+                  ? (r.variants[0]?.arabic ?? r.english)
+                  : r.english}
+              </span>
+              <span style={{ fontSize: '12px', color: '#9ca3af' }}>{r.english}</span>
             </li>
           ))}
         </ul>
