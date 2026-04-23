@@ -13,35 +13,35 @@ export default function WordDetail({ result }: Props) {
 
   return (
     <div className="p-8 overflow-y-auto h-full">
-      <h1 className="text-4xl font-extrabold text-gray-900 mb-1">{result.english}</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 mb-1">{result.english}</h1>
       {result.part_of_speech && (
-        <p className="text-sm text-gray-400 mb-5">{result.part_of_speech}</p>
+        <p className="text-xs text-gray-400 mb-4">{result.part_of_speech}</p>
       )}
-      <div className="h-0.5 w-28 bg-gradient-to-r from-[#003DA5] via-[#F7A800] to-[#D21034] rounded mb-8" />
+      <div className="h-0.5 w-28 bg-gradient-to-r from-[#003DA5] via-[#F7A800] to-[#D21034] rounded mb-6" />
 
       {result.variants.map((v, i) => (
-        <div key={v.id} className="mb-8">
+        <div key={v.id} className="mb-6">
           {result.variants.length > 1 && (
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
               Variant {v.number}
             </p>
           )}
 
-          <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#003DA5] mb-2">Assyrian</p>
-            <p dir="rtl" className="text-2xl text-[#003DA5] leading-relaxed text-right">{v.assyrian}</p>
+          <div className="mb-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#003DA5] mb-1">Assyrian</p>
+            <p dir="rtl" className="text-lg text-[#003DA5] leading-relaxed text-right">{v.assyrian}</p>
           </div>
 
-          <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#D21034] mb-2">Arabic</p>
-            <p dir="rtl" className="text-xl text-[#D21034] leading-relaxed text-right">{v.arabic}</p>
+          <div className="mb-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#D21034] mb-1">Arabic</p>
+            <p dir="rtl" className="text-base text-[#D21034] leading-relaxed text-right">{v.arabic}</p>
           </div>
 
-          <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Farsi</p>
+          <div className="mb-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Farsi</p>
             {v.farsi
-              ? <p dir="rtl" className="text-xl text-gray-900 leading-relaxed text-right">{v.farsi}</p>
-              : <p className="text-sm text-gray-300 italic">Not yet available</p>
+              ? <p dir="rtl" className="text-base text-gray-900 leading-relaxed text-right">{v.farsi}</p>
+              : <p className="text-xs text-gray-300 italic">Not yet available</p>
             }
           </div>
 
