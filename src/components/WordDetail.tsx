@@ -12,7 +12,7 @@ export default function WordDetail({ result }: Props) {
   }
 
   return (
-    <div className="p-8 pb-16">
+    <div className="p-8 pb-32">
       <h1 className="text-2xl font-extrabold text-gray-900 mb-1">{result.english}</h1>
       {result.part_of_speech && (
         <p className="text-xs text-gray-400 mb-4">{result.part_of_speech}</p>
