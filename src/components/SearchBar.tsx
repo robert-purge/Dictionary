@@ -14,6 +14,7 @@ interface Props {
 export default function SearchBar({ onSearch, onCommit, results, showResults, onSelect }: Props) {
   const [value, setValue] = useState('')
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const open = showResults && results.length > 0
 
   useEffect(() => {
     clearTimeout(timer.current)
@@ -21,34 +22,68 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
     return () => clearTimeout(timer.current)
   }, [value, onSearch])
 
-  const open = showResults && results.length > 0
-
   return (
-    <div className="relative w-full">
-      <div className={`flex items-center gap-3 border-2 border-[#003DA5] bg-white px-4 py-3 shadow-md ${open ? 'rounded-t-xl' : 'rounded-xl'}`}>
-        <span className="text-[#003DA5] text-lg">🔍</span>
+    <div style={{ position: 'relative', width: '100%' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        border: '2px solid #003DA5',
+        borderBottom: open ? '2px solid #003DA5' : '2px solid #003DA5',
+        borderRadius: open ? '12px 12px 0 0' : '12px',
+        background: 'white',
+        padding: '12px 16px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+      }}>
+        <span style={{ color: '#003DA5', fontSize: '18px' }}>🔍</span>
         <input
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') onCommit?.() }}
           placeholder="Search in English, ܐܬܘܪܝܐ, عربي, or فارسی"
-          className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-300"
+          style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: '#374151' }}
           autoFocus
         />
       </div>
 
       {open && (
-        <ul className="absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto rounded-b-xl border-2 border-t-0 border-[#003DA5] bg-white shadow-2xl">
+        <ul style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          width: '100%',
+          background: 'white',
+          border: '2px solid #003DA5',
+          borderTop: 'none',
+          borderRadius: '0 0 12px 12px',
+          maxHeight: '320px',
+          overflowY: 'auto',
+          zIndex: 100,
+          margin: 0,
+          padding: 0,
+          listStyle: 'none',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+        }}>
           {results.map((r) => (
             <li
               key={r.id}
               onMouseDown={(e) => { e.preventDefault(); onSelect(r) }}
-              className="flex items-baseline gap-2 cursor-pointer px-4 py-2.5 border-b border-gray-100 last:border-0 hover:bg-gray-50"
+              style={{
+                padding: '10px 16px',
+                cursor: 'pointer',
+                borderBottom: '1px solid #f3f4f6',
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'baseline',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLLIElement).style.background = '#f9fafb' }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLLIElement).style.background = 'white' }}
             >
-              <span className="font-medium text-gray-900">{r.english}</span>
+              <span style={{ fontWeight: 500, color: '#111827' }}>{r.english}</span>
               {r.part_of_speech && (
-                <span className="text-xs text-gray-400">{r.part_of_speech}</span>
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>{r.part_of_speech}</span>
               )}
             </li>
           ))}
