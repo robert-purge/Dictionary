@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="relative min-h-screen bg-[#f9f9f7] overflow-hidden">
+      <body className="relative min-h-screen bg-[#f9f9f7]">
 
         {/* Assyrian flag as full-page watermark */}
         {/* eslint-disable-next-line @next/next/no-img-element */}

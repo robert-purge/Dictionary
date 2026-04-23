@@ -35,7 +35,7 @@ export default function Home() {
   }, [results])
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)]">
+    <div className="flex flex-col min-h-[calc(100vh-64px)]">
       {/* Search bar with dropdown */}
       <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200">
         <SearchBar
@@ -54,7 +54,7 @@ export default function Home() {
       </div>
 
       {/* Word detail fills remaining space */}
-      <div className="flex-1 bg-white/50 backdrop-blur-sm overflow-y-auto">
+      <div className="flex-1 bg-white/50 backdrop-blur-sm">
         <WordDetail result={selected} />
       </div>
     </div>
