@@ -18,7 +18,6 @@ export default function Home() {
       const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
       const data = await res.json()
       setResults(data.results ?? [])
-      setSelected(data.results?.[0] ?? null)
       setShowResults(true)
     } finally {
       setLoading(false)
@@ -31,8 +30,9 @@ export default function Home() {
   }, [])
 
   const handleCommit = useCallback(() => {
+    if (results.length > 0) setSelected(results[0])
     setShowResults(false)
-  }, [])
+  }, [results])
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">

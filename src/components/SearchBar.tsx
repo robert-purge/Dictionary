@@ -37,7 +37,7 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
       </div>
 
       {showResults && results.length > 0 && (
-        <ul className="absolute left-0 right-0 top-full z-50 mt-1 max-h-80 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-2xl">
+        <ul className="absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto rounded-b-xl border border-t-0 border-gray-200 bg-white shadow-2xl">
           {results.map((r) => (
             <li
               key={r.id}
