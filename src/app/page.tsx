@@ -36,26 +36,30 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)]">
-      {/* Search bar with dropdown */}
-      <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200">
-        <SearchBar
-          onSearch={handleSearch}
-          onCommit={handleCommit}
-          results={results}
-          showResults={showResults}
-          onSelect={handleSelect}
-        />
-        <p className="text-center text-xs text-gray-300 mt-2">
-          Auto-detects English, ܐܬܘܪܝܐ, عربي, or فارسی
-        </p>
-        {loading && (
-          <p className="text-center text-xs text-gray-300 animate-pulse mt-1">Searching...</p>
-        )}
+      {/* Search bar */}
+      <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200 flex justify-center">
+        <div className="w-full max-w-2xl">
+          <SearchBar
+            onSearch={handleSearch}
+            onCommit={handleCommit}
+            results={results}
+            showResults={showResults}
+            onSelect={handleSelect}
+          />
+          <p className="text-center text-xs text-gray-300 mt-2">
+            Auto-detects English, ܐܬܘܪܝܐ, عربي, or فارسی
+          </p>
+          {loading && (
+            <p className="text-center text-xs text-gray-300 animate-pulse mt-1">Searching...</p>
+          )}
+        </div>
       </div>
 
-      {/* Word detail fills remaining space */}
-      <div className="flex-1 bg-white/50 backdrop-blur-sm">
-        <WordDetail result={selected} />
+      {/* Word detail */}
+      <div className="flex-1 bg-white/50 backdrop-blur-sm flex justify-center">
+        <div className="w-full max-w-2xl">
+          <WordDetail result={selected} />
+        </div>
       </div>
     </div>
   )
