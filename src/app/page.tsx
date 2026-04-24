@@ -37,8 +37,8 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)]">
       {/* Search bar */}
-      <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200 flex justify-center">
-        <div className="w-full max-w-2xl">
+      <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200" style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ width: '100%', maxWidth: '672px' }}>
           <SearchBar
             onSearch={handleSearch}
             onCommit={handleCommit}
@@ -56,8 +56,8 @@ export default function Home() {
       </div>
 
       {/* Word detail */}
-      <div className="flex-1 bg-white/50 backdrop-blur-sm flex justify-center">
-        <div className="w-full max-w-2xl">
+      <div className="flex-1 bg-white/50 backdrop-blur-sm" style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ width: '100%', maxWidth: '672px' }}>
           <WordDetail result={selected} />
         </div>
       </div>
