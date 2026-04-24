@@ -8,6 +8,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Times New Roman', Times, serif;
+}
+
 [dir="rtl"] {
   font-family: 'Audo', 'Estrangelo Edessa', serif;
   font-size: 1.4rem;
