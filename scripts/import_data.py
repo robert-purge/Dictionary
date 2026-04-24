@@ -11,7 +11,7 @@ BATCH_SIZE = 100
 
 def import_data(json_path: str):
     client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    with open(json_path, encoding='utf-8') as f:
+    with open(json_path, encoding='utf-8-sig') as f:
         entries = json.load(f)
 
     print(f'Importing {len(entries)} entries...')

@@ -1,104 +1,182 @@
 """
 Parse the Assyrian dictionary Word document into data/dictionary.json.
 
-Document structure (from screenshot analysis):
-- Section headers: "-A-", "-B-" etc. — skip these
-- English entry line: "word part_of_speech" in Latin script (e.g. "abase vt.")
-- Assyrian translations: lines in Syriac Unicode (U+0700–U+074F)
-- Arabic translations: lines in Arabic Unicode (U+0600–U+06FF)
-- Numbered variants: lines starting with "1•", "2°", "3•" etc.
+Each paragraph is ONE complete entry or variant on a single line:
+  english[num] [•] pos. Syriac_text Arabic_text
 
-NOTE: Run on a small excerpt first and inspect output before processing the full document.
-Adjust split_english_pos() if your doc uses different part-of-speech abbreviations.
+Continuation variants start with a digit:
+  2 • pos. Syriac_text Arabic_text
+
+Run: python scripts/parse_word.py data/dictionary.docx data/dictionary.json
 """
 import re, json, sys
 from docx import Document
 
-SYRIAC_RE = re.compile(r'[\u0700-\u074F]')
-ARABIC_RE = re.compile(r'[\u0600-\u06FF]')
-LATIN_RE = re.compile(r'[a-zA-Z]')
 SYRIAC_VOWELS_RE = re.compile(r'[\u0730-\u074A]')
 SECTION_HEADER_RE = re.compile(r'^-[A-Z]+-$')
-VARIANT_NUM_RE = re.compile(r'^(\d+)\s*[°•\.\s]')
+ARABIC_LETTER_RE = re.compile(r'[\u0621-\u064A\u0660-\u06D6]')
 
-POS_ABBRS = {'n', 'vt', 'vi', 'adv', 'adj', 'prep', 'conj', 'interj', 'pron', 'art', 'num', 'abbr', 'v'}
-
-def detect_script(text: str) -> str:
-    if SYRIAC_RE.search(text): return 'syriac'
-    if ARABIC_RE.search(text): return 'arabic'
-    if LATIN_RE.search(text): return 'latin'
-    return 'unknown'
+POS_ABBRS = {
+    'n', 'vt', 'vi', 'adv', 'adj', 'prep', 'conj', 'interj', 'pron',
+    'art', 'num', 'abbr', 'v', 'see', 'cf', 'pl', 'sing', 'arch',
+    'pref', 'suf', 'aux', 'det',
+}
 
 def normalize_syriac(text: str) -> str:
     return SYRIAC_VOWELS_RE.sub('', text)
 
-def split_english_pos(text: str) -> tuple[str, str]:
-    """Split 'abase vt.' or 'aardvark n.zoo' into ('abase', 'vt.') / ('aardvark', 'n.zoo')"""
-    parts = text.strip().split()
-    if len(parts) <= 1:
-        return text.strip().lower(), ''
-    word = parts[0].lower()
-    # Remaining tokens after the headword are part of speech
-    pos_parts = []
-    for token in parts[1:]:
-        base = token.rstrip('.').lower()
-        if base in POS_ABBRS or token[0].islower():
-            pos_parts.append(token)
-    return word, ' '.join(pos_parts) if pos_parts else ' '.join(parts[1:])
-
 def get_para_text(para) -> str:
     return ''.join(run.text for run in para.runs).strip()
+
+def split_syriac_arabic(body: str) -> tuple[str, str]:
+    """
+    Given the body text (Syriac + Arabic mixed), split into separate strings.
+    Strategy: find the last Syriac character; everything after it (skipping
+    to the first Arabic letter) is the Arabic translation.
+    """
+    if not body:
+        return '', ''
+
+    last_syriac = -1
+    for i, c in enumerate(body):
+        if '\u0700' <= c <= '\u074F':
+            last_syriac = i
+
+    if last_syriac == -1:
+        return '', body.strip()
+
+    syriac = body[:last_syriac + 1].strip()
+    after = body[last_syriac + 1:]
+
+    m = ARABIC_LETTER_RE.search(after)
+    arabic = after[m.start():].strip() if m else ''
+
+    return syriac, arabic
+
+def parse_header(raw: str) -> dict:
+    """
+    Parse the text before the first Syriac character.
+    Returns dict with: english, pos, variant_num, is_continuation
+    """
+    text = re.sub(r'[\xa0\t]+', ' ', raw).strip()
+
+    # Continuation variant: starts with a digit followed by • or .
+    # Check BEFORE stripping trailing bullet
+    if re.match(r'^\d+\s*[•\.]', text):
+        m = re.match(r'^(\d+)\s*[•\.]\s*(.*)', text)
+        num = int(m.group(1))
+        rest = m.group(2).strip().rstrip('•').strip()
+        pos = rest.split()[0] if rest else None
+        return {'english': None, 'pos': pos, 'variant_num': num, 'is_continuation': True}
+
+    if not re.match(r'^[a-zA-Z]', text):
+        return {'english': None, 'pos': None, 'variant_num': None, 'is_continuation': False}
+
+    # Pattern 1: inline variant — "abandon1 • vt." or "abandon1 vt."
+    m1 = re.match(r'^([a-zA-Z][a-zA-Z\s\-\']*?)(\d+)\s*[•]?\s*(.*)', text)
+    if m1:
+        english = m1.group(1).strip().lower()
+        variant = int(m1.group(2))
+        pos_raw = m1.group(3).strip().rstrip('•').strip()
+        pos = pos_raw.split()[0] if pos_raw else None
+        return {'english': english, 'pos': pos, 'variant_num': variant, 'is_continuation': False}
+
+    # Pattern 2: post-POS variant — "abase vt. 1 •" or "abbreviation n. 1 •"
+    m2 = re.match(r'^([a-zA-Z][a-zA-Z\s\-\']*?)\s+([\w\.]+)\s+(\d+)\s*[•]', text)
+    if m2:
+        english = m2.group(1).strip().lower()
+        pos = m2.group(2).strip()
+        variant = int(m2.group(3))
+        return {'english': english, 'pos': pos, 'variant_num': variant, 'is_continuation': False}
+
+    # Pattern 3: simple entry — "aardvark n.zoo", "abbacy n.", "taken aback"
+    tokens = text.split()
+    english_tokens, pos_tokens, found_pos = [], [], False
+    for tok in tokens:
+        base = tok.rstrip('.')
+        if not found_pos and (base.lower() in POS_ABBRS or re.match(r'^[a-z]+\.[a-z]*$', tok.lower())):
+            found_pos = True
+        (pos_tokens if found_pos else english_tokens).append(tok)
+
+    english = ' '.join(english_tokens).lower() or text.lower()
+    pos = ' '.join(pos_tokens) if pos_tokens else None
+    return {'english': english, 'pos': pos, 'variant_num': None, 'is_continuation': False}
+
+def new_variant(num: int) -> dict:
+    return {
+        'number': num,
+        'assyrian': '',
+        'assyrian_normalized': '',
+        'arabic': '',
+        'farsi': None,
+        'example_assyrian': None,
+        'example_arabic': None,
+    }
 
 def parse(docx_path: str) -> list[dict]:
     doc = Document(docx_path)
     entries: list[dict] = []
     current_entry: dict | None = None
-    current_variant: dict | None = None
-
-    def new_variant(num: int) -> dict:
-        return {'number': num, 'assyrian': '', 'arabic': '', 'farsi': None,
-                'example_assyrian': None, 'example_arabic': None}
 
     for para in doc.paragraphs:
-        text = get_para_text(para)
-        if not text or SECTION_HEADER_RE.match(text):
+        raw = get_para_text(para)
+        if not raw:
             continue
 
-        script = detect_script(text)
-        variant_match = VARIANT_NUM_RE.match(text)
+        normalized = re.sub(r'[\xa0\t]+', ' ', raw).strip()
+        if SECTION_HEADER_RE.match(normalized):
+            continue
 
-        if script == 'latin' and not variant_match:
-            # Save previous entry
+        syriac_start = next((i for i, c in enumerate(raw) if '\u0700' <= c <= '\u074F'), None)
+        raw_header = raw[:syriac_start] if syriac_start is not None else raw
+        body = raw[syriac_start:] if syriac_start is not None else ''
+
+        assyrian, arabic = split_syriac_arabic(body)
+        parsed = parse_header(raw_header)
+
+        # Body-only paragraph (starts with Syriac, no English header):
+        # fill in the last variant of the current entry
+        if syriac_start == 0 and not parsed['english'] and not parsed['is_continuation']:
+            if current_entry and current_entry['variants']:
+                v = current_entry['variants'][-1]
+                if not v['assyrian']:
+                    v['assyrian'] = assyrian
+                    v['arabic'] = arabic
+                    v['assyrian_normalized'] = normalize_syriac(assyrian)
+            continue
+
+        if parsed['is_continuation']:
+            if current_entry is not None:
+                v = new_variant(parsed['variant_num'])
+                v['assyrian'] = assyrian
+                v['arabic'] = arabic
+                v['assyrian_normalized'] = normalize_syriac(assyrian)
+                # Replace existing empty variant with same number, otherwise append
+                existing = next((i for i, ev in enumerate(current_entry['variants'])
+                                 if ev['number'] == parsed['variant_num'] and not ev['assyrian']), None)
+                if existing is not None:
+                    current_entry['variants'][existing] = v
+                else:
+                    current_entry['variants'].append(v)
+
+        elif parsed['english']:
             if current_entry:
                 entries.append(current_entry)
-            english, pos = split_english_pos(text)
-            current_variant = new_variant(1)
+
+            variant_num = parsed['variant_num'] or 1
+            v = new_variant(variant_num)
+            v['assyrian'] = assyrian
+            v['arabic'] = arabic
+            v['assyrian_normalized'] = normalize_syriac(assyrian)
+
             current_entry = {
-                'english': english,
-                'part_of_speech': pos,
-                'variants': [current_variant],
+                'english': parsed['english'],
+                'part_of_speech': parsed['pos'],
+                'variants': [v],
             }
-
-        elif variant_match and current_entry is not None:
-            num = int(variant_match.group(1))
-            current_variant = new_variant(num)
-            current_entry['variants'].append(current_variant)
-
-        elif script == 'syriac' and current_variant is not None:
-            sep = '؛ ' if current_variant['assyrian'] else ''
-            current_variant['assyrian'] += sep + text
-
-        elif script == 'arabic' and current_variant is not None:
-            sep = '؛ ' if current_variant['arabic'] else ''
-            current_variant['arabic'] += sep + text
 
     if current_entry:
         entries.append(current_entry)
-
-    # Compute normalized Assyrian for each variant
-    for entry in entries:
-        for v in entry['variants']:
-            v['assyrian_normalized'] = normalize_syriac(v['assyrian'])
 
     return entries
 
