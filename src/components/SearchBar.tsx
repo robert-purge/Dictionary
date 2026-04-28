@@ -12,8 +12,8 @@ interface Props {
 }
 
 function detectScript(text: string): 'syriac' | 'arabic' | 'latin' {
-  if (/[\u0700-\u074F]/.test(text)) return 'syriac'
-  if (/[\u0600-\u06FF]/.test(text)) return 'arabic'
+  if (/[܀-ݏ]/.test(text)) return 'syriac'
+  if (/[؀-ۿ]/.test(text)) return 'arabic'
   return 'latin'
 }
 
@@ -30,76 +30,33 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
   }, [value, onSearch])
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        border: '2px solid #003DA5',
-        borderBottom: open ? '2px solid #003DA5' : '2px solid #003DA5',
-        borderRadius: open ? '12px 12px 0 0' : '12px',
-        background: 'white',
-        padding: '12px 16px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-      }}>
-        <span style={{ color: '#003DA5', fontSize: '18px' }}>🔍</span>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') onCommit?.() }}
-          placeholder="Search in English, ܐܬܘܪܝܐ, عربي, or فارسی"
-          style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: '#374151' }}
-          autoFocus
-        />
-      </div>
+    <div className="search-wrapper">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter') onCommit?.() }}
+        placeholder="Search in English, ܐܬܘܪܝܐ, عربي, or فارسی"
+        className={`search-input font-english${open ? ' dropdown-open' : ''}`}
+        dir={script === 'latin' ? 'ltr' : 'rtl'}
+        autoFocus
+      />
 
       {open && (
-        <ul style={{
-          position: 'absolute',
-          top: '100%',
-          left: 0,
-          right: 0,
-          width: '100%',
-          background: 'white',
-          border: '2px solid #003DA5',
-          borderTop: 'none',
-          borderRadius: '0 0 12px 12px',
-          maxHeight: '320px',
-          overflowY: 'auto',
-          zIndex: 100,
-          margin: 0,
-          padding: 0,
-          listStyle: 'none',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-        }}>
+        <div className="search-dropdown">
           {results.map((r) => (
-            <li
+            <div
               key={r.id}
+              className="search-dropdown-item"
               onMouseDown={(e) => { e.preventDefault(); onSelect(r) }}
-              style={{
-                padding: '10px 16px',
-                cursor: 'pointer',
-                borderBottom: '1px solid #f3f4f6',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                direction: script === 'latin' ? 'ltr' : 'rtl',
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLLIElement).style.background = '#f9fafb' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLLIElement).style.background = 'white' }}
             >
-              <span style={{ fontWeight: 500, color: '#111827' }}>
-                {script === 'syriac'
-                  ? (r.variants[0]?.assyrian ?? r.english)
-                  : script === 'arabic'
-                  ? (r.variants[0]?.arabic ?? r.english)
-                  : r.english}
+              <span className="font-english">{r.english}</span>
+              <span className="item-preview font-assyrian">
+                {r.variants[0]?.assyrian ?? ''}
               </span>
-              <span style={{ fontSize: '12px', color: '#9ca3af' }}>{r.english}</span>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )

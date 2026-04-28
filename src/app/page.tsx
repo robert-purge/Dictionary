@@ -35,32 +35,26 @@ export default function Home() {
   }, [results])
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-64px)]">
-      {/* Search bar */}
-      <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200" style={{ display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: '100%', maxWidth: '672px' }}>
-          <SearchBar
-            onSearch={handleSearch}
-            onCommit={handleCommit}
-            results={results}
-            showResults={showResults}
-            onSelect={handleSelect}
-          />
-          <p className="text-center text-xs text-gray-300 mt-2">
-            Auto-detects English, ܐܬܘܪܝܐ, عربي, or فارسی
-          </p>
-          {loading && (
-            <p className="text-center text-xs text-gray-300 animate-pulse mt-1">Searching...</p>
-          )}
-        </div>
+    <>
+      <div className="bg-white border-bottom py-3 px-3">
+        <SearchBar
+          onSearch={handleSearch}
+          onCommit={handleCommit}
+          results={results}
+          showResults={showResults}
+          onSelect={handleSelect}
+        />
+        <p className="search-hint mt-2">
+          Auto-detects English, ܐܬܘܪܝܐ, عربي, or فارسی
+        </p>
+        {loading && (
+          <p className="search-hint mt-1">Searching…</p>
+        )}
       </div>
 
-      {/* Word detail */}
-      <div className="flex-1 bg-white/50 backdrop-blur-sm" style={{ display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: '100%', maxWidth: '672px' }}>
-          <WordDetail result={selected} />
-        </div>
+      <div style={{ background: 'rgba(255,255,255,0.5)' }}>
+        <WordDetail result={selected} />
       </div>
-    </div>
+    </>
   )
 }
