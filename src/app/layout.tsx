@@ -18,6 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Amiri&display=swap"
         />
         <link rel="stylesheet" href="/style.css" />
+        {/* Keyman Web engine */}
+        <script src="https://s.keyman.com/kmw/engine/17.0/keymanweb.js" defer />
+        <script src="/keyboards/audo12.js" defer />
       </head>
       <body>
         {/* Assyrian flag watermark */}
