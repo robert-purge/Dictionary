@@ -184,9 +184,23 @@ body {
   background-color: #f9fafb;
 }
 
-.search-dropdown-item .item-preview {
-  font-size: 1.8rem;
+.item-previews {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 55%;
+}
+
+.item-preview {
+  display: block;
   direction: rtl;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: 1.4rem;
+  line-height: 1.5;
 }
 
 

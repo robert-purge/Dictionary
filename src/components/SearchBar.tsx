@@ -44,25 +44,27 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
 
       {open && (
         <div className="search-dropdown">
-          {results.map((r) => {
-            const isArabic = script === 'arabic'
-            const preview = isArabic
-              ? (r.variants[0]?.arabic ?? '')
-              : (r.variants[0]?.assyrian ?? '')
-            const previewClass = isArabic
-              ? 'item-preview font-arabic translation-arabic'
-              : 'item-preview font-assyrian translation-assyrian'
-            return (
-              <div
-                key={r.id}
-                className="search-dropdown-item"
-                onMouseDown={(e) => { e.preventDefault(); onSelect(r) }}
-              >
-                <span className="font-english">{r.english}</span>
-                <span className={previewClass}>{preview}</span>
+          {results.map((r) => (
+            <div
+              key={r.id}
+              className="search-dropdown-item"
+              onMouseDown={(e) => { e.preventDefault(); onSelect(r) }}
+            >
+              <span className="font-english">{r.english}</span>
+              <div className="item-previews">
+                {r.variants[0]?.assyrian && (
+                  <span className="font-assyrian translation-assyrian item-preview">
+                    {r.variants[0].assyrian}
+                  </span>
+                )}
+                {r.variants[0]?.arabic && (
+                  <span className="font-arabic translation-arabic item-preview">
+                    {r.variants[0].arabic}
+                  </span>
+                )}
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       )}
     </div>
