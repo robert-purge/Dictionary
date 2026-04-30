@@ -51,12 +51,28 @@ def main():
 
     print(f"Loaded {len(all_variants)} variants total.")
 
+    # Quick sanity check: count via Supabase directly
+    total_db = client.table("variants").select("id", count="exact").execute().count
+    print(f"Supabase reports {total_db} total variants.")
+    if len(all_variants) != total_db:
+        print(f"WARNING: only fetched {len(all_variants)} — pagination may have missed rows.")
+
+    # Filter in Python: all three translation fields empty or null
     empty = [
         v for v in all_variants
         if not (v.get("assyrian") or "").strip()
         and not (v.get("arabic")   or "").strip()
         and not (v.get("farsi")    or "").strip()
     ]
+
+    # Also show counts broken down by field for diagnostics
+    empty_assy  = sum(1 for v in all_variants if not (v.get("assyrian") or "").strip())
+    empty_arab  = sum(1 for v in all_variants if not (v.get("arabic")   or "").strip())
+    empty_farsi = sum(1 for v in all_variants if not (v.get("farsi")    or "").strip())
+    print(f"  Empty assyrian: {empty_assy}")
+    print(f"  Empty arabic:   {empty_arab}")
+    print(f"  Empty farsi:    {empty_farsi}")
+    print(f"  All three empty: {len(empty)}")
 
     if not empty:
         print("No empty-translation variants found — database is clean!")
