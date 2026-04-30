@@ -57,12 +57,11 @@ def main():
     if len(all_variants) != total_db:
         print(f"WARNING: only fetched {len(all_variants)} — pagination may have missed rows.")
 
-    # Filter in Python: all three translation fields empty or null
+    # Filter: Assyrian AND Arabic both empty (Farsi may have been enriched separately)
     empty = [
         v for v in all_variants
         if not (v.get("assyrian") or "").strip()
         and not (v.get("arabic")   or "").strip()
-        and not (v.get("farsi")    or "").strip()
     ]
 
     # Also show counts broken down by field for diagnostics
