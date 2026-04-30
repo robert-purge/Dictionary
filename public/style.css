@@ -365,10 +365,6 @@ body {
   border-bottom-color: #002d7a;
 }
 
-.kb-key.kb-dim {
-  opacity: 0;
-  pointer-events: none;
-}
 
 .kb-key.kb-space {
   flex: 1;
