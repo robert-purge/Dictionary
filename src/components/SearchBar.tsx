@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { SearchResult } from '@/types/dictionary'
+import SyriacKeyboard from './SyriacKeyboard'
 
 interface Props {
   onSearch: (query: string) => void
@@ -17,23 +18,9 @@ function detectScript(text: string): 'syriac' | 'arabic' | 'latin' {
   return 'latin'
 }
 
-declare global {
-  interface Window {
-    keyman?: {
-      init: (opts: Record<string, unknown>) => void
-      attachToControl: (el: HTMLElement) => void
-      setKeyboard: (keyboard: string) => Promise<void>
-      isAttached: (el: HTMLElement) => boolean
-      detachFromControl: (el: HTMLElement) => void
-      osk?: { show: (v: boolean) => void }
-    }
-  }
-}
-
 export default function SearchBar({ onSearch, onCommit, results, showResults, onSelect }: Props) {
   const [value, setValue] = useState('')
   const [keyboardOn, setKeyboardOn] = useState(false)
-  const [keymanReady, setKeymanReady] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const inputRef = useRef<HTMLInputElement>(null)
   const open = showResults && results.length > 0
@@ -46,46 +33,44 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
     return () => clearTimeout(timer.current)
   }, [value, onSearch])
 
-  // Poll for Keyman engine to finish loading (deferred scripts take a moment)
-  useEffect(() => {
-    let attempts = 0
-    const poll = setInterval(() => {
-      attempts++
-      const km = window.keyman
-      if (km) {
-        clearInterval(poll)
-        try {
-          // ui:'button' enables the OSK; we hide Keyman's own button via CSS
-          km.init({ attachType: 'manual', ui: 'button' })
-        } catch {
-          // already initialised on hot-reload
-        }
-        setKeymanReady(true)
-        return
-      }
-      if (attempts >= 50) clearInterval(poll) // give up after ~10 s
-    }, 200)
-
-    return () => clearInterval(poll)
-  }, [])
-
-  // Attach / detach keyboard + show / hide OSK whenever toggle or readiness changes
-  useEffect(() => {
-    if (!keymanReady) return
-    const km = window.keyman
+  // Insert a character at the current cursor position
+  const insertChar = (ch: string) => {
     const input = inputRef.current
-    if (!km || !input) return
+    if (!input) return
+    const start = input.selectionStart ?? value.length
+    const end   = input.selectionEnd   ?? value.length
+    const next  = value.slice(0, start) + ch + value.slice(end)
+    setValue(next)
+    const pos = start + ch.length
+    requestAnimationFrame(() => {
+      input.setSelectionRange(pos, pos)
+      input.focus()
+    })
+  }
 
-    if (keyboardOn) {
-      if (!km.isAttached(input)) km.attachToControl(input)
-      km.setKeyboard('Keyboard_audo12')
-        .then(() => { km.osk?.show(true) })
-        .catch(() => { km.osk?.show(true) })
+  // Delete one character before cursor (or the current selection)
+  const deleteChar = () => {
+    const input = inputRef.current
+    if (!input) return
+    const start = input.selectionStart ?? value.length
+    const end   = input.selectionEnd   ?? value.length
+    let next: string
+    let pos: number
+    if (start !== end) {
+      next = value.slice(0, start) + value.slice(end)
+      pos  = start
+    } else if (start > 0) {
+      next = value.slice(0, start - 1) + value.slice(start)
+      pos  = start - 1
     } else {
-      km.osk?.show(false)
-      if (km.isAttached(input)) km.detachFromControl(input)
+      return
     }
-  }, [keyboardOn, keymanReady])
+    setValue(next)
+    requestAnimationFrame(() => {
+      input.setSelectionRange(pos, pos)
+      input.focus()
+    })
+  }
 
   return (
     <div className="search-wrapper">
@@ -104,8 +89,8 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
         />
         <button
           type="button"
-          aria-label={keyboardOn ? 'Disable Assyrian keyboard' : 'Enable Assyrian keyboard'}
-          title={keyboardOn ? 'Assyrian keyboard ON — click to hide' : 'Show Assyrian on-screen keyboard'}
+          aria-label={keyboardOn ? 'Hide Assyrian keyboard' : 'Show Assyrian keyboard'}
+          title={keyboardOn ? 'Hide on-screen keyboard' : 'Show Assyrian on-screen keyboard'}
           onClick={() => setKeyboardOn((v) => !v)}
           style={{
             position: 'absolute',
@@ -149,6 +134,10 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
             </div>
           ))}
         </div>
+      )}
+
+      {keyboardOn && (
+        <SyriacKeyboard onKey={insertChar} onBackspace={deleteChar} />
       )}
     </div>
   )
