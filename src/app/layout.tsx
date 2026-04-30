@@ -30,14 +30,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
 
         <div className="site-content">
-          <nav className="site-nav d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
-            <div>
-              <div className="nav-brand-title">
-                ܐܬܘܪܝܐ <span style={{ color: 'var(--color-blue)' }}>Dictionary</span>
-              </div>
-              <div className="nav-brand-sub">Assyrian · English · Arabic · Farsi</div>
+          <nav className="site-nav px-4 py-3 border-bottom text-center">
+            <div className="nav-brand-title">
+              ܐܬܘܪܝܐ <span style={{ color: 'var(--color-blue)' }}>Dictionary</span>
             </div>
-            <div className="nav-brand-tagline d-none d-md-block">
+            <div className="nav-brand-sub">Assyrian · English · Arabic · Farsi</div>
+            <div className="nav-brand-tagline">
               Type in any language — we&apos;ll figure it out
             </div>
           </nav>
