@@ -272,6 +272,10 @@ body {
   margin: 1.5rem 0;
 }
 
+/* Hide Keyman's own floating toggle button — we use our own ⌨ button */
+#kmwico, #kmw-button, .kmw-button { display: none !important; }
+
+
 /* Empty state */
 .word-placeholder {
   max-width: 672px;

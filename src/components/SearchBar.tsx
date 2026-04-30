@@ -33,6 +33,7 @@ declare global {
 export default function SearchBar({ onSearch, onCommit, results, showResults, onSelect }: Props) {
   const [value, setValue] = useState('')
   const [keyboardOn, setKeyboardOn] = useState(false)
+  const [keymanReady, setKeymanReady] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const inputRef = useRef<HTMLInputElement>(null)
   const open = showResults && results.length > 0
@@ -45,50 +46,46 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
     return () => clearTimeout(timer.current)
   }, [value, onSearch])
 
-  // Initialize Keyman once the engine + keyboard scripts have loaded
+  // Poll for Keyman engine to finish loading (deferred scripts take a moment)
   useEffect(() => {
-    if (!inputRef.current) return
-    const input = inputRef.current
-
-    function tryInit() {
+    let attempts = 0
+    const poll = setInterval(() => {
+      attempts++
       const km = window.keyman
-      if (!km) return
-      try {
-        km.init({ attachType: 'manual', ui: 'none' })
-      } catch {
-        // already initialised
+      if (km) {
+        clearInterval(poll)
+        try {
+          // ui:'button' enables the OSK; we hide Keyman's own button via CSS
+          km.init({ attachType: 'manual', ui: 'button' })
+        } catch {
+          // already initialised on hot-reload
+        }
+        setKeymanReady(true)
+        return
       }
-    }
+      if (attempts >= 50) clearInterval(poll) // give up after ~10 s
+    }, 200)
 
-    // Scripts are deferred so they may not be ready immediately
-    if (document.readyState === 'complete') {
-      tryInit()
-    } else {
-      window.addEventListener('load', tryInit, { once: true })
-    }
-
-    return () => {
-      // detach on unmount if attached
-      const km = window.keyman
-      if (km && km.isAttached(input)) km.detachFromControl(input)
-    }
+    return () => clearInterval(poll)
   }, [])
 
-  // Attach / detach Keyman when toggle changes
+  // Attach / detach keyboard + show / hide OSK whenever toggle or readiness changes
   useEffect(() => {
+    if (!keymanReady) return
     const km = window.keyman
     const input = inputRef.current
     if (!km || !input) return
 
     if (keyboardOn) {
       if (!km.isAttached(input)) km.attachToControl(input)
-      km.setKeyboard('Keyboard_audo12').catch(() => {})
-      km.osk?.show(true)
+      km.setKeyboard('Keyboard_audo12')
+        .then(() => { km.osk?.show(true) })
+        .catch(() => { km.osk?.show(true) })
     } else {
-      if (km.isAttached(input)) km.detachFromControl(input)
       km.osk?.show(false)
+      if (km.isAttached(input)) km.detachFromControl(input)
     }
-  }, [keyboardOn])
+  }, [keyboardOn, keymanReady])
 
   return (
     <div className="search-wrapper">
@@ -108,7 +105,7 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
         <button
           type="button"
           aria-label={keyboardOn ? 'Disable Assyrian keyboard' : 'Enable Assyrian keyboard'}
-          title={keyboardOn ? 'Assyrian keyboard ON' : 'Assyrian keyboard OFF'}
+          title={keyboardOn ? 'Assyrian keyboard ON — click to hide' : 'Show Assyrian on-screen keyboard'}
           onClick={() => setKeyboardOn((v) => !v)}
           style={{
             position: 'absolute',
