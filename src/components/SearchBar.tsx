@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { SearchResult } from '@/types/dictionary'
-import SyriacKeyboard from './SyriacKeyboard'
+import OnScreenKeyboard from './OnScreenKeyboard'
 
 interface Props {
   onSearch: (query: string) => void
@@ -137,7 +137,11 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
       )}
 
       {keyboardOn && (
-        <SyriacKeyboard onKey={insertChar} onBackspace={deleteChar} />
+        <OnScreenKeyboard
+          onKey={insertChar}
+          onBackspace={deleteChar}
+          onEnter={onCommit}
+        />
       )}
     </div>
   )
