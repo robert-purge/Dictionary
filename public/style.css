@@ -186,8 +186,6 @@ body {
 
 .search-dropdown-item .item-preview {
   font-size: 1.8rem;
-  font-family: 'Audo', 'Estrangelo Edessa', serif;
-  color: var(--color-blue);
   direction: rtl;
 }
 
