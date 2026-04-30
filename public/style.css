@@ -23,19 +23,19 @@
 
 .font-assyrian {
   font-family: 'Audo', serif;
-  font-size: 1.6rem;
+  font-size: 2.8rem;
   line-height: 1.9;
 }
 
 .font-arabic {
   font-family: 'Amiri', 'Traditional Arabic', 'Arabic Typesetting', serif;
-  font-size: 1.15rem;
+  font-size: 2rem;
   line-height: 1.9;
 }
 
 .font-farsi {
   font-family: 'Amiri', 'Tahoma', sans-serif;
-  font-size: 1.15rem;
+  font-size: 2rem;
   line-height: 1.9;
 }
 
@@ -125,8 +125,8 @@ body {
   width: 100%;
   border: 1px solid var(--color-border);
   border-radius: 12px !important;
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.8rem;
   font-family: 'Times New Roman', Times, serif;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -144,7 +144,7 @@ body {
 }
 
 .search-hint {
-  font-size: 0.75rem;
+  font-size: 1.2rem;
   color: var(--color-muted);
   text-align: center;
   margin-top: 0.4rem;
@@ -166,14 +166,14 @@ body {
 }
 
 .search-dropdown-item {
-  padding: 0.55rem 1rem;
+  padding: 0.8rem 1.2rem;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #f3f4f6;
   font-family: 'Times New Roman', Times, serif;
-  font-size: 0.95rem;
+  font-size: 1.7rem;
 }
 
 .search-dropdown-item:last-child {
@@ -185,7 +185,7 @@ body {
 }
 
 .search-dropdown-item .item-preview {
-  font-size: 0.9rem;
+  font-size: 1.8rem;
   font-family: 'Audo', 'Estrangelo Edessa', serif;
   color: var(--color-blue);
   direction: rtl;
@@ -201,14 +201,14 @@ body {
 }
 
 .word-headword {
-  font-size: 1.5rem;
+  font-size: 2.6rem;
   font-weight: 800;
   text-transform: capitalize;
   color: var(--color-text);
 }
 
 .word-pos {
-  font-size: 0.75rem;
+  font-size: 1.3rem;
   color: var(--color-muted);
   margin-top: 0.1rem;
 }
@@ -224,7 +224,7 @@ body {
 
 /* Small uppercase labels above each translation */
 .lang-label {
-  font-size: 0.62rem;
+  font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -241,13 +241,13 @@ body {
 .translation-farsi    { color: var(--color-text);  }
 
 .translation-missing {
-  font-size: 0.78rem;
+  font-size: 1.3rem;
   color: #d1d5db;
   font-style: italic;
 }
 
 .variant-label {
-  font-size: 0.62rem;
+  font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -267,5 +267,5 @@ body {
   padding: 4rem 1.5rem;
   text-align: center;
   color: #d1d5db;
-  font-size: 0.9rem;
+  font-size: 1.6rem;
 }
