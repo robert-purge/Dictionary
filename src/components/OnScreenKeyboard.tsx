@@ -10,20 +10,21 @@ interface LangLayout {
   shift: string[][]
 }
 
-// ── SYRIAC — matches audo12 Keyman layout ────────────────────────────────
-// Default: 10/9/10 — phone-friendly row widths
-// Shift: 4 rows — diacritics + all extra audo12 characters
+// ── SYRIAC ────────────────────────────────────────────────────────────────
+// Default: all 22 base Syriac consonants (no diacritics) in 3 even rows,
+//          plus . ܘܼ ܘܿ for usability.
+// Shift:   soft variants (ܬ݂ ܓ݂ ܟ݂), diacritics, and all other audo12 chars.
 const SYRIAC: LangLayout = {
   default: [
-    ['ܘܼܗܝ','ܨ','ܬ݂','ܩ','ܦ','ܓ݂','ܥ','ܗ','ܟ݂','ܚ'],       // Q W E R T Y U I O P
-    ['ܫ','ܣ','ܝ','ܒ','ܠ','ܐ','ܬ','ܢ','ܡ'],                  // A S D F G H J K L
-    ['ܲ','ܛ','ܙ','ܪ','ܪ̈','ܕ','.','ܘ','ܘܼ','ܘܿ'],             // Z X C V B N M , . /
+    ['ܨ','ܩ','ܦ','ܥ','ܗ','ܚ','ܓ','ܟ'],           // 8 base consonants
+    ['ܫ','ܣ','ܝ','ܒ','ܠ','ܐ','ܬ','ܢ','ܡ'],         // 9 base consonants
+    ['ܛ','ܙ','ܪ','ܕ','ܘ','.','ܘܼ','ܘܿ'],           // 5 base + . ܘ variants
   ],
   shift: [
-    ['ܘܼܗ̇','̱','ܿ','ܦ̮','݀','݁','̈','݇','̇','̃'],              // Q W R T Y U I O P ]
-    ['ܫ̃','ܑ','ܝܼ','ܒ݂','ܠܵܐ','ܵܐ','ـ','ܐܝܼܬ','ܡ̣ܢ','̣'],       // A S D F G H J K L ;
-    ['ܲ','ܵ','ܸ','ܹ','ܹܐ','ܬܵܐ','݂','،','؛','ܠܹܐ','؟'],        // Z X C V B N M , . / \
-    ['ܟ','ܓ','ܓ̰','ܟ̰','ܲܝܗܝ'],                               // ; ' [ ] `
+    ['ܘܼܗ̇','̱','ܿ','ܦ̮','݀','݁','̈','݇','̇','̃'],    // diacritics (Q-P + ])
+    ['ܫ̃','ܑ','ܝܼ','ܒ݂','ܠܵܐ','ܵܐ','ـ','ܐܝܼܬ','ܡ̣ܢ','̣'],  // diacritics (A-L + ;)
+    ['ܲ','ܵ','ܸ','ܹ','ܹܐ','ܬܵܐ','݂','،','؛','ܠܹܐ','؟'],  // diacritics + punct
+    ['ܬ݂','ܓ݂','ܟ݂','ܪ̈','ܓ̰','ܟ̰','ܲܝܗܝ'],            // soft variants + extras
   ],
 }
 
