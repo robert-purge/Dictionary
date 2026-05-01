@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const queryText = lang === 'syriac' ? normalizeSyriac(q) : q
 
   const supabase = createServerClient()
-  const { data, error } = await supabase.rpc('search_dictionary', {
+  const { data, error } = await supabase.rpc('search_dictionary_v2', {
     query_text: queryText,
     lang,
   })
