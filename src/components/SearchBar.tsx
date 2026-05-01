@@ -85,6 +85,7 @@ export default function SearchBar({ onSearch, onCommit, results, showResults, on
           className={`search-input font-english${open ? ' dropdown-open' : ''}`}
           dir={script === 'latin' ? 'ltr' : 'rtl'}
           style={{ paddingRight: '3.2rem' }}
+          inputMode={keyboardOn ? 'none' : undefined}
           autoFocus
         />
         <button
