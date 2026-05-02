@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const client = createServiceClient()
 
   let query = client
-    .table('syriac_words')
+    .from('syriac_words')
     .select('id, word, arabic, entry_words(entries(english, part_of_speech))', { count: 'exact' })
     .range(page * pageSize, (page + 1) * pageSize - 1)
     .order('id')
@@ -28,32 +28,30 @@ export async function GET(req: NextRequest) {
   if (q) {
     // Filter by English entry name via a separate lookup
     const entryRows = await client
-      .table('entries')
+      .from('entries')
       .select('id')
       .ilike('english', `%${q}%`)
-      .execute()
 
     const entryIds = (entryRows.data ?? []).map((e: any) => e.id)
     if (!entryIds.length) return NextResponse.json({ words: [], total: 0 })
 
     const wordRows = await client
-      .table('entry_words')
+      .from('entry_words')
       .select('syriac_word_id')
       .in('entry_id', entryIds)
-      .execute()
 
     const wordIds = [...new Set((wordRows.data ?? []).map((r: any) => r.syriac_word_id))]
     if (!wordIds.length) return NextResponse.json({ words: [], total: 0 })
 
     query = client
-      .table('syriac_words')
+      .from('syriac_words')
       .select('id, word, arabic, entry_words(entries(english, part_of_speech))', { count: 'exact' })
       .in('id', wordIds)
       .range(page * pageSize, (page + 1) * pageSize - 1)
       .order('id')
   }
 
-  const { data, error, count } = await query.execute()
+  const { data, error, count } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   // Flatten English context — take first entry per word
@@ -77,10 +75,9 @@ export async function PATCH(req: NextRequest) {
 
   const client = createServiceClient()
   const { error } = await client
-    .table('syriac_words')
+    .from('syriac_words')
     .update({ arabic: arabic ?? null })
     .eq('id', id)
-    .execute()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
