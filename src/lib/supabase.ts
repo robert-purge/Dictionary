@@ -10,3 +10,8 @@ export function createBrowserClient() {
 export function createServerClient() {
   return createClient(url, anonKey)
 }
+
+export function createServiceClient() {
+  const serviceKey = process.env.SUPABASE_SERVICE_KEY!
+  return createClient(url, serviceKey)
+}
