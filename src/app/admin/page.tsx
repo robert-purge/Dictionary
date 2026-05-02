@@ -3,28 +3,36 @@
 import { useState, useEffect, useCallback } from 'react'
 
 interface Word {
-  id: number
-  word: string
-  arabic: string | null
-  english: string
-  pos: string
+  id:       number
+  word:     string
+  english:  string
+  arabic:   string | null
+  farsi:    string | null
+  pos:      string
+  entry_id: number | null
+}
+
+interface WordEdits {
+  english?: string
+  arabic?:  string
+  farsi?:   string
 }
 
 const PAGE_SIZE = 50
 
 export default function AdminPage() {
-  const [password, setPassword]     = useState('')
-  const [authed, setAuthed]         = useState(false)
-  const [authError, setAuthError]   = useState(false)
-  const [words, setWords]           = useState<Word[]>([])
-  const [total, setTotal]           = useState(0)
-  const [page, setPage]             = useState(0)
-  const [q, setQ]                   = useState('')
+  const [password, setPassword]       = useState('')
+  const [authed, setAuthed]           = useState(false)
+  const [authError, setAuthError]     = useState(false)
+  const [words, setWords]             = useState<Word[]>([])
+  const [total, setTotal]             = useState(0)
+  const [page, setPage]               = useState(0)
+  const [q, setQ]                     = useState('')
   const [searchInput, setSearchInput] = useState('')
-  const [loading, setLoading]       = useState(false)
-  const [edits, setEdits]           = useState<Record<number, string>>({})
-  const [saved, setSaved]           = useState<Record<number, boolean>>({})
-  const [saving, setSaving]         = useState<Record<number, boolean>>({})
+  const [loading, setLoading]         = useState(false)
+  const [edits, setEdits]             = useState<Record<number, WordEdits>>({})
+  const [saved, setSaved]             = useState<Record<number, boolean>>({})
+  const [saving, setSaving]           = useState<Record<number, boolean>>({})
 
   const storedPassword = () =>
     typeof window !== 'undefined' ? sessionStorage.getItem('admin_pw') ?? '' : ''
@@ -63,21 +71,49 @@ export default function AdminPage() {
     setAuthed(true)
   }
 
-  async function saveWord(id: number) {
-    const arabic = edits[id] ?? words.find(w => w.id === id)?.arabic ?? ''
-    setSaving(s => ({ ...s, [id]: true }))
+  function setField(id: number, field: keyof WordEdits, value: string) {
+    setEdits(ed => ({ ...ed, [id]: { ...ed[id], [field]: value } }))
+  }
+
+  function isDirty(w: Word) {
+    const e = edits[w.id]
+    if (!e) return false
+    return (
+      (e.english !== undefined && e.english !== w.english) ||
+      (e.arabic  !== undefined && e.arabic  !== (w.arabic ?? '')) ||
+      (e.farsi   !== undefined && e.farsi   !== (w.farsi  ?? ''))
+    )
+  }
+
+  async function saveWord(w: Word) {
+    const e = edits[w.id] ?? {}
+    setSaving(s => ({ ...s, [w.id]: true }))
+
+    const body: Record<string, any> = { id: w.id, entry_id: w.entry_id }
+    if (e.english !== undefined && e.english !== w.english)
+      body.english = e.english
+    if (e.arabic !== undefined && e.arabic !== (w.arabic ?? ''))
+      body.arabic = e.arabic || null
+    if (e.farsi !== undefined && e.farsi !== (w.farsi ?? ''))
+      body.farsi = e.farsi || null
 
     const res = await fetch('/api/admin/words', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-      body: JSON.stringify({ id, arabic: arabic || null }),
+      body: JSON.stringify(body),
     })
 
-    setSaving(s => ({ ...s, [id]: false }))
+    setSaving(s => ({ ...s, [w.id]: false }))
     if (res.ok) {
-      setSaved(s => ({ ...s, [id]: true }))
-      setWords(ws => ws.map(w => w.id === id ? { ...w, arabic } : w))
-      setTimeout(() => setSaved(s => ({ ...s, [id]: false })), 2000)
+      setSaved(s => ({ ...s, [w.id]: true }))
+      setWords(ws => ws.map(x => x.id === w.id ? {
+        ...x,
+        english: e.english ?? x.english,
+        arabic:  e.arabic  !== undefined ? (e.arabic || null)  : x.arabic,
+        farsi:   e.farsi   !== undefined ? (e.farsi  || null)  : x.farsi,
+      } : x))
+      setEdits(ed => { const n = { ...ed }; delete n[w.id]; return n })
+      setTimeout(() => setSaved(s => ({ ...s, [w.id]: false })), 2000)
     }
   }
 
@@ -107,7 +143,7 @@ export default function AdminPage() {
   )
 
   return (
-    <div style={{ padding: '1.5rem', maxWidth: '1100px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+    <div style={{ padding: '1.5rem', maxWidth: '1300px', margin: '0 auto', fontFamily: 'sans-serif' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
@@ -140,61 +176,74 @@ export default function AdminPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--color-border)', textAlign: 'left' }}>
-              <th style={{ padding: '0.5rem', width: '180px' }}>English</th>
-              <th style={{ padding: '0.5rem', width: '280px', textAlign: 'right' }}>Syriac</th>
+              <th style={{ padding: '0.5rem', width: '200px', textAlign: 'right' }}>Syriac</th>
+              <th style={{ padding: '0.5rem' }}>English</th>
               <th style={{ padding: '0.5rem', textAlign: 'right' }}>Arabic</th>
+              <th style={{ padding: '0.5rem', textAlign: 'right' }}>Farsi</th>
               <th style={{ padding: '0.5rem', width: '70px' }}></th>
             </tr>
           </thead>
           <tbody>
             {words.map(w => {
-              const editedArabic = edits[w.id] ?? w.arabic ?? ''
-              const isDirty = w.id in edits && edits[w.id] !== (w.arabic ?? '')
+              const e        = edits[w.id] ?? {}
+              const dirty    = isDirty(w)
+              const engVal   = e.english ?? w.english
+              const arabVal  = e.arabic  ?? w.arabic  ?? ''
+              const farsiVal = e.farsi   ?? w.farsi   ?? ''
               return (
                 <tr key={w.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
 
-                  <td style={{ padding: '0.5rem', color: 'var(--color-text)' }}>
-                    {w.english}
-                    {w.pos && <span style={{ color: 'var(--color-muted)', fontSize: '0.75rem', marginLeft: '4px' }}>{w.pos}</span>}
-                  </td>
-
+                  {/* Syriac — read-only */}
                   <td style={{ padding: '0.5rem', textAlign: 'right', direction: 'rtl', fontFamily: "'Audo', serif", fontSize: '1.2rem', color: 'var(--color-text)' }}>
                     {w.word}
                   </td>
 
+                  {/* English — editable */}
                   <td style={{ padding: '0.5rem' }}>
                     <textarea
-                      value={editedArabic}
-                      onChange={e => setEdits(ed => ({ ...ed, [w.id]: e.target.value }))}
+                      value={engVal}
+                      onChange={e => setField(w.id, 'english', e.target.value)}
                       rows={2}
-                      style={{
-                        width: '100%',
-                        direction: 'rtl',
-                        fontFamily: "'Amiri', 'Traditional Arabic', serif",
-                        fontSize: '1rem',
-                        padding: '0.3rem',
-                        border: `1px solid ${isDirty ? 'var(--color-gold)' : 'var(--color-border)'}`,
-                        borderRadius: '4px',
-                        resize: 'vertical',
-                        background: isDirty ? '#fffbf0' : '#fff',
-                      }}
+                      style={textareaStyle(e.english !== undefined && e.english !== w.english, 'ltr')}
+                    />
+                    {w.pos && <span style={{ color: 'var(--color-muted)', fontSize: '0.72rem' }}>{w.pos}</span>}
+                  </td>
+
+                  {/* Arabic — editable */}
+                  <td style={{ padding: '0.5rem' }}>
+                    <textarea
+                      value={arabVal}
+                      onChange={e => setField(w.id, 'arabic', e.target.value)}
+                      rows={2}
+                      style={textareaStyle(e.arabic !== undefined && e.arabic !== (w.arabic ?? ''), 'rtl', "'Amiri', 'Traditional Arabic', serif")}
                     />
                   </td>
 
+                  {/* Farsi — editable */}
+                  <td style={{ padding: '0.5rem' }}>
+                    <textarea
+                      value={farsiVal}
+                      onChange={e => setField(w.id, 'farsi', e.target.value)}
+                      rows={2}
+                      style={textareaStyle(e.farsi !== undefined && e.farsi !== (w.farsi ?? ''), 'rtl', "'Amiri', serif")}
+                    />
+                  </td>
+
+                  {/* Save */}
                   <td style={{ padding: '0.5rem', textAlign: 'center' }}>
                     {saved[w.id] ? (
                       <span style={{ color: 'green', fontSize: '1.2rem' }}>✓</span>
                     ) : (
                       <button
-                        onClick={() => saveWord(w.id)}
-                        disabled={saving[w.id] || !isDirty}
+                        onClick={() => saveWord(w)}
+                        disabled={saving[w.id] || !dirty}
                         style={{
                           padding: '0.3rem 0.6rem',
-                          background: isDirty ? 'var(--color-blue)' : '#eee',
-                          color: isDirty ? '#fff' : '#999',
+                          background: dirty ? 'var(--color-blue)' : '#eee',
+                          color: dirty ? '#fff' : '#999',
                           border: 'none',
                           borderRadius: '4px',
-                          cursor: isDirty ? 'pointer' : 'default',
+                          cursor: dirty ? 'pointer' : 'default',
                           fontSize: '0.8rem',
                         }}
                       >
@@ -212,17 +261,31 @@ export default function AdminPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem', justifyContent: 'center' }}>
-          <button onClick={() => setPage(0)}       disabled={page === 0}            style={btnStyle(page === 0)}>«</button>
-          <button onClick={() => setPage(p => p - 1)} disabled={page === 0}         style={btnStyle(page === 0)}>‹</button>
+          <button onClick={() => setPage(0)}           disabled={page === 0}              style={btnStyle(page === 0)}>«</button>
+          <button onClick={() => setPage(p => p - 1)}  disabled={page === 0}              style={btnStyle(page === 0)}>‹</button>
           <span style={{ fontSize: '0.875rem', color: 'var(--color-muted)' }}>
             Page {page + 1} of {totalPages}
           </span>
-          <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1} style={btnStyle(page >= totalPages - 1)}>›</button>
+          <button onClick={() => setPage(p => p + 1)}  disabled={page >= totalPages - 1}  style={btnStyle(page >= totalPages - 1)}>›</button>
           <button onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1} style={btnStyle(page >= totalPages - 1)}>»</button>
         </div>
       )}
     </div>
   )
+}
+
+function textareaStyle(isDirty: boolean, direction: 'ltr' | 'rtl', fontFamily = 'inherit') {
+  return {
+    width: '100%',
+    direction,
+    fontFamily,
+    fontSize: '1rem',
+    padding: '0.3rem',
+    border: `1px solid ${isDirty ? 'var(--color-gold)' : 'var(--color-border)'}`,
+    borderRadius: '4px',
+    resize: 'vertical' as const,
+    background: isDirty ? '#fffbf0' : '#fff',
+  }
 }
 
 function btnStyle(disabled: boolean) {
