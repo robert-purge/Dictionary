@@ -194,7 +194,7 @@ export default function AdminPage() {
                 <tr key={w.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
 
                   {/* Syriac — read-only */}
-                  <td style={{ padding: '0.5rem', textAlign: 'right', direction: 'rtl', fontFamily: "'Audo', serif", fontSize: '1.2rem', color: 'var(--color-text)' }}>
+                  <td style={{ padding: '0.5rem', textAlign: 'right', direction: 'rtl', fontFamily: "'Audo', serif", fontSize: '1.8rem', color: 'var(--color-text)' }}>
                     {w.word}
                   </td>
 
