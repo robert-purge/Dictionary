@@ -4,7 +4,7 @@
 
 CREATE OR REPLACE FUNCTION search_dictionary_v2(query_text TEXT, lang TEXT)
 RETURNS TABLE(
-    id            BIGINT,
+    id            INTEGER,
     english       TEXT,
     part_of_speech TEXT,
     variants      JSONB
