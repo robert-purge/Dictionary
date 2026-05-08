@@ -40,7 +40,14 @@ export default function WordDetail({ result }: Props) {
                 )}
                 {v.audio_url && (
                   <button
-                    onClick={() => new Audio(v.audio_url!).play()}
+                    onClick={async () => {
+                      try {
+                        const audio = new Audio(v.audio_url!)
+                        await audio.play()
+                      } catch {
+                        // audio unavailable or CORS blocked — ignore silently
+                      }
+                    }}
                     title="Play pronunciation"
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer',
