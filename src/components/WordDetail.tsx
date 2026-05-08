@@ -31,6 +31,28 @@ export default function WordDetail({ result }: Props) {
               ? <p dir="rtl" className="font-assyrian translation-assyrian">{v.assyrian}</p>
               : <p className="translation-missing">No Assyrian translation</p>
             }
+            {(v.pronunciation || v.audio_url) && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                {v.pronunciation && (
+                  <span style={{ fontSize: '0.8rem', color: '#6b7280', fontStyle: 'italic', fontFamily: 'monospace' }}>
+                    {v.pronunciation}
+                  </span>
+                )}
+                {v.audio_url && (
+                  <button
+                    onClick={() => new Audio(v.audio_url!).play()}
+                    title="Play pronunciation"
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      padding: '2px 6px', borderRadius: '4px',
+                      color: '#003DA5', fontSize: '1rem', lineHeight: 1,
+                    }}
+                  >
+                    ▶
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="mb-4">

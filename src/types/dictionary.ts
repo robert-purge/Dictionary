@@ -5,6 +5,8 @@ export interface Variant {
   assyrian_normalized: string | null
   arabic: string | null
   farsi: string | null
+  pronunciation: string | null
+  audio_url: string | null
   example_assyrian: string | null
   example_arabic: string | null
 }

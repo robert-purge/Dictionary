@@ -29,6 +29,8 @@ BEGIN
                         'assyrian_normalized',  sw.word_normalized,
                         'arabic',               sw.arabic,
                         'farsi',                sw.farsi,
+                        'pronunciation',        sw.pronunciation,
+                        'audio_url',            sw.audio_url,
                         'example_arabic',       NULL,
                         'example_assyrian',     NULL
                     ) ORDER BY sub.sort_order
