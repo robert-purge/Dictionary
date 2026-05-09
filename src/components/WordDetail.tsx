@@ -1,23 +1,30 @@
 import type { SearchResult } from '@/types/dictionary'
 
-interface Props { result: SearchResult | null }
+interface Props {
+  result: SearchResult | null
+  translationsOnly?: boolean
+}
 
-export default function WordDetail({ result }: Props) {
+export default function WordDetail({ result, translationsOnly }: Props) {
   if (!result) {
     return (
       <div className="word-placeholder">
-        Search for a word to see translations
+        Translation will appear here
       </div>
     )
   }
 
   return (
     <div className="word-detail">
-      <h1 className="word-headword">{result.english}</h1>
-      {result.part_of_speech && (
-        <p className="word-pos">{result.part_of_speech}</p>
+      {!translationsOnly && (
+        <>
+          <h1 className="word-headword">{result.english}</h1>
+          {result.part_of_speech && (
+            <p className="word-pos">{result.part_of_speech}</p>
+          )}
+          <div className="flag-bar" />
+        </>
       )}
-      <div className="flag-bar" />
 
       {result.variants.map((v, i) => (
         <div key={v.id}>
