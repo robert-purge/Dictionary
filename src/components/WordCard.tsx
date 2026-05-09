@@ -25,36 +25,37 @@ function AudioButton({ url }: { url: string }) {
   )
 }
 
-function LangCard({ label, labelClass, variants, textClass, field, phonetic }: {
-  label: string
-  labelClass: string
-  textClass: string
-  variants: Variant[]
-  field: 'assyrian' | 'arabic' | 'farsi'
-  phonetic?: boolean
-}) {
-  const texts = variants.map(v => ({ text: v[field], audio: v.audio_url, pron: v.pronunciation })).filter(v => v.text)
-
+function VariantGroup({ variant, number, showNumber }: { variant: Variant; number: number; showNumber: boolean }) {
   return (
-    <div className="lang-card">
-      <div className={`lang-label ${labelClass}`}>{label}</div>
-      {texts.length > 0 ? (
-        <div className="d-flex flex-column gap-2">
-          {texts.map((t, i) => (
-            <div key={i}>
-              <div className="d-flex align-items-center gap-1">
-                <span dir="rtl" className={textClass}>{t.text}</span>
-                {t.audio && <AudioButton url={t.audio} />}
-              </div>
-              {phonetic && t.pron && (
-                <div style={{ fontSize: '0.8rem', color: '#9ca3af', fontFamily: 'monospace' }}>{t.pron}</div>
+    <div className="variant-group">
+      {showNumber && (
+        <div className="variant-label">Variant {number}</div>
+      )}
+      <div className="d-flex flex-column gap-2">
+        {LANGS.map(({ key, label, labelClass, textClass }) => {
+          const text = variant[key]
+          return (
+            <div key={key} className="lang-card">
+              <div className={`lang-label ${labelClass}`}>{label}</div>
+              {text ? (
+                <div className="d-flex align-items-center gap-1">
+                  <span dir="rtl" className={textClass}>{text}</span>
+                  {key === 'assyrian' && variant.audio_url && (
+                    <AudioButton url={variant.audio_url} />
+                  )}
+                </div>
+              ) : (
+                <div className="translation-missing">Not yet translated</div>
+              )}
+              {key === 'assyrian' && variant.pronunciation && (
+                <div style={{ fontSize: '0.8rem', color: '#9ca3af', fontFamily: 'monospace', marginTop: '2px' }}>
+                  {variant.pronunciation}
+                </div>
               )}
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="translation-missing">Not yet translated</div>
-      )}
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -72,18 +73,15 @@ export default function WordCard({ entry }: Props) {
           </div>
         </div>
 
-        {/* Right: language cards */}
+        {/* Right: one group of language cards per variant */}
         <div className="col-12 col-md-8">
-          <div className="d-flex flex-column gap-2">
-            {LANGS.map(({ key, label, labelClass, textClass }) => (
-              <LangCard
-                key={key}
-                label={label}
-                labelClass={labelClass}
-                textClass={textClass}
-                variants={entry.variants}
-                field={key}
-                phonetic={key === 'assyrian'}
+          <div className="d-flex flex-column gap-3">
+            {entry.variants.map((v, i) => (
+              <VariantGroup
+                key={v.id}
+                variant={v}
+                number={i + 1}
+                showNumber={entry.variants.length > 1}
               />
             ))}
           </div>
