@@ -13,15 +13,17 @@ const LANGS = [
 function AudioButton({ url }: { url: string }) {
   return (
     <button
+      className="audio-btn"
       onClick={async () => {
-        try { await new Audio(url).play() } catch { /* CORS / unavailable */ }
+        try { await new Audio(url).play() } catch { /* unavailable */ }
       }}
       title="Play pronunciation"
-      style={{
-        background: 'none', border: 'none', cursor: 'pointer',
-        padding: '0 4px', fontSize: '0.9rem', opacity: 0.7, lineHeight: 1,
-      }}
-    >▶</button>
+      aria-label="Play pronunciation"
+    >
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor">
+        <polygon points="1,0 11,5.5 1,11" />
+      </svg>
+    </button>
   )
 }
 

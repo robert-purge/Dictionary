@@ -437,6 +437,34 @@ body {
 }
 
 
+/* ── AUDIO PLAY BUTTON ────────────────────────────────── */
+
+.audio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-blue);
+  background: none;
+  color: var(--color-blue);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+  padding: 0;
+}
+
+.audio-btn:hover {
+  background: var(--color-blue);
+  color: white;
+}
+
+.audio-btn:active {
+  opacity: 0.7;
+}
+
+
 /* Empty state */
 .word-placeholder {
   max-width: 672px;
