@@ -1,23 +1,30 @@
 import type { SearchResult } from '@/types/dictionary'
 
-interface Props { result: SearchResult | null }
+interface Props {
+  result: SearchResult | null
+  translationsOnly?: boolean
+}
 
-export default function WordDetail({ result }: Props) {
+export default function WordDetail({ result, translationsOnly }: Props) {
   if (!result) {
     return (
       <div className="word-placeholder">
-        Search for a word to see translations
+        Translation will appear here
       </div>
     )
   }
 
   return (
     <div className="word-detail">
-      <h1 className="word-headword">{result.english}</h1>
-      {result.part_of_speech && (
-        <p className="word-pos">{result.part_of_speech}</p>
+      {!translationsOnly && (
+        <>
+          <h1 className="word-headword">{result.english}</h1>
+          {result.part_of_speech && (
+            <p className="word-pos">{result.part_of_speech}</p>
+          )}
+          <div className="flag-bar" />
+        </>
       )}
-      <div className="flag-bar" />
 
       {result.variants.map((v, i) => (
         <div key={v.id}>
@@ -31,6 +38,35 @@ export default function WordDetail({ result }: Props) {
               ? <p dir="rtl" className="font-assyrian translation-assyrian">{v.assyrian}</p>
               : <p className="translation-missing">No Assyrian translation</p>
             }
+            {(v.pronunciation || v.audio_url) && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                {v.pronunciation && (
+                  <span style={{ fontSize: '0.8rem', color: '#6b7280', fontStyle: 'italic', fontFamily: 'monospace' }}>
+                    {v.pronunciation}
+                  </span>
+                )}
+                {v.audio_url && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        const audio = new Audio(v.audio_url!)
+                        await audio.play()
+                      } catch {
+                        // audio unavailable or CORS blocked — ignore silently
+                      }
+                    }}
+                    title="Play pronunciation"
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      padding: '2px 6px', borderRadius: '4px',
+                      color: '#003DA5', fontSize: '1rem', lineHeight: 1,
+                    }}
+                  >
+                    ▶
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="mb-4">

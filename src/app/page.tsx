@@ -2,18 +2,19 @@
 
 import { useCallback, useState } from 'react'
 import SearchBar from '@/components/SearchBar'
-import WordDetail from '@/components/WordDetail'
+import WordCard from '@/components/WordCard'
 import type { SearchResult } from '@/types/dictionary'
 
 export default function Home() {
   const [results, setResults] = useState<SearchResult[]>([])
-  const [selected, setSelected] = useState<SearchResult | null>(null)
-  const [loading, setLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [searched, setSearched] = useState(false)
 
   const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) { setResults([]); setSelected(null); setShowResults(false); return }
+    if (!query.trim()) { setResults([]); setShowResults(false); setSearched(false); return }
     setLoading(true)
+    setSearched(true)
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
       const data = await res.json()
@@ -25,18 +26,17 @@ export default function Home() {
   }, [])
 
   const handleSelect = useCallback((result: SearchResult) => {
-    setSelected(result)
+    setResults([result])
     setShowResults(false)
   }, [])
 
   const handleCommit = useCallback(() => {
-    if (results.length > 0) setSelected(results[0])
     setShowResults(false)
-  }, [results])
+  }, [])
 
   return (
     <>
-      <div className="bg-white border-bottom py-3 px-3">
+      <div className="search-section">
         <SearchBar
           onSearch={handleSearch}
           onCommit={handleCommit}
@@ -44,17 +44,21 @@ export default function Home() {
           showResults={showResults}
           onSelect={handleSelect}
         />
-        <p className="search-hint mt-2">
-          Auto-detects English, ܐܬܘܪܝܐ, عربي, or فارسی
-        </p>
-        {loading && (
-          <p className="search-hint mt-1">Searching…</p>
-        )}
+        <p className="search-hint mt-2">Auto-detects English, ܐܬܘܪܝܐ, عربي, or فارسی</p>
       </div>
 
-      <div style={{ background: 'rgba(255,255,255,0.5)' }}>
-        <WordDetail result={selected} />
-      </div>
+      <main className="results-section">
+        {loading && <div className="word-placeholder">Searching…</div>}
+        {!loading && searched && results.length === 0 && (
+          <div className="word-placeholder">No results found.</div>
+        )}
+        {!loading && !searched && (
+          <div className="word-placeholder">Search for a word to see translations</div>
+        )}
+        {!loading && !showResults && results.map(entry => (
+          <WordCard key={entry.id} entry={entry} />
+        ))}
+      </main>
     </>
   )
 }

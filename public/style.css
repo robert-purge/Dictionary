@@ -23,20 +23,20 @@
 
 .font-assyrian {
   font-family: 'Audo', serif;
-  font-size: 2.8rem;
-  line-height: 1.9;
+  font-size: 1.3rem;
+  line-height: 1.6;
 }
 
 .font-arabic {
   font-family: 'Amiri', 'Traditional Arabic', 'Arabic Typesetting', serif;
-  font-size: 2rem;
-  line-height: 1.9;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
 .font-farsi {
   font-family: 'Amiri', 'Tahoma', sans-serif;
-  font-size: 2rem;
-  line-height: 1.9;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
 
@@ -383,6 +383,85 @@ body {
   font-size: 0.6rem;
   color: #9ca3af;
   font-family: monospace;
+}
+
+
+/* ── SEARCH SECTION ───────────────────────────────────────── */
+
+.search-section {
+  background: white;
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 1rem 0.75rem;
+}
+
+/* ── RESULTS SECTION ──────────────────────────────────────── */
+
+.results-section {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ── WORD CARD ROW ────────────────────────────────────────── */
+
+.word-card-row {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.word-card-row:last-child {
+  border-bottom: none;
+}
+
+/* Left: English word box */
+.word-info-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  height: 100%;
+}
+
+/* Right: individual language card */
+.lang-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+}
+
+/* Variant group separator */
+.variant-group + .variant-group {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+
+/* ── AUDIO PLAY BUTTON ────────────────────────────────── */
+
+.audio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-blue);
+  background: none;
+  color: var(--color-blue);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+  padding: 0;
+}
+
+.audio-btn:hover {
+  background: var(--color-blue);
+  color: white;
+}
+
+.audio-btn:active {
+  opacity: 0.7;
 }
 
 
