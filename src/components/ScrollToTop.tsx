@@ -20,9 +20,10 @@ export default function ScrollToTop() {
       aria-label="Back to top"
       title="Back to top"
     >
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor">
         <polygon points="7,1 13,10 1,10" />
       </svg>
+      <span>Top</span>
     </button>
   )
 }

@@ -471,20 +471,21 @@ body {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 50%;
+  border-radius: 20px;
   border: 1.5px solid var(--color-blue);
   background: white;
   color: var(--color-blue);
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.35rem;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 500;
-  transition: background 0.15s, color 0.15s, opacity 0.15s;
-  padding: 0;
+  transition: background 0.15s, color 0.15s;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
 }
 
 .scroll-to-top:hover {
