@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import ScrollToTop from '@/components/ScrollToTop'
 
 export const metadata: Metadata = {
   title: 'ܐܬܘܪܝܐ Dictionary',
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <main>{children}</main>
         </div>
+        <ScrollToTop />
       </body>
     </html>
   )
