@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import SearchBar from '@/components/SearchBar'
 import WordCard from '@/components/WordCard'
 import type { SearchResult } from '@/types/dictionary'
@@ -10,16 +10,32 @@ export default function Home() {
   const [showResults, setShowResults] = useState(false)
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
 
   const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) { setResults([]); setShowResults(false); setSearched(false); return }
+    if (!query.trim()) {
+      setResults([]); setShowResults(false); setSearched(false); setError(null); return
+    }
+    // Cancel any in-flight request
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
+
     setLoading(true)
     setSearched(true)
+    setError(null)
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+        signal: abortRef.current.signal,
+      })
       const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Search failed')
       setResults(data.results ?? [])
       setShowResults(true)
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name === 'AbortError') return
+      setError('Search is unavailable — please try again in a moment.')
+      setResults([])
     } finally {
       setLoading(false)
     }
@@ -49,10 +65,13 @@ export default function Home() {
 
       <main className="results-section">
         {loading && <div className="word-placeholder">Searching…</div>}
-        {!loading && searched && results.length === 0 && (
+        {!loading && error && (
+          <div className="word-placeholder" style={{ color: 'var(--color-red)' }}>{error}</div>
+        )}
+        {!loading && !error && searched && results.length === 0 && (
           <div className="word-placeholder">No results found.</div>
         )}
-        {!loading && !searched && (
+        {!loading && !error && !searched && (
           <div className="word-placeholder">Search for a word to see translations</div>
         )}
         {!loading && !showResults && results.map(entry => (
