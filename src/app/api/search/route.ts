@@ -24,9 +24,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  const results = (data ?? []).map((r: SearchResult) => ({
-    ...r,
-    variants: r.variants ?? [],
-  }))
+  const results = (data ?? [])
+    .map((r: SearchResult) => ({ ...r, variants: r.variants ?? [] }))
+    .filter((r: SearchResult) => r.variants.length > 0)
   return NextResponse.json({ results })
 }
