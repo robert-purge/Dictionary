@@ -78,7 +78,7 @@ export default function WordCard({ entry }: Props) {
         {/* Right: one group of language cards per variant */}
         <div className="col-12 col-md-8">
           <div className="d-flex flex-column gap-3">
-            {entry.variants.map((v, i) => (
+            {(entry.variants ?? []).map((v, i) => (
               <VariantGroup
                 key={v.id}
                 variant={v}
