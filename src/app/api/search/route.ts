@@ -24,5 +24,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ results: (data ?? []) as SearchResult[] })
+  const results = (data ?? []).map((r: SearchResult) => ({
+    ...r,
+    variants: r.variants ?? [],
+  }))
+  return NextResponse.json({ results })
 }
